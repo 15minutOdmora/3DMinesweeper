@@ -89,6 +89,11 @@ public class Field : MonoBehaviour
 
     private void OnMouseClick()
     {
+        if (!GameManager.Instance.GameActive)
+        {
+            return;
+        }
+
         ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white, 10f);
@@ -99,6 +104,7 @@ public class Field : MonoBehaviour
             if (cubeData.isMine)
             {
                 cubeData.DisplayMine();
+                GameManager.Instance.GameEnd();
             }
             else
             {

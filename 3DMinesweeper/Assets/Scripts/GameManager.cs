@@ -11,7 +11,11 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     public event Action OnGameRestart;
     public event Action OnGameEnd;
 
+    public bool GameActive => gameActive;
+
     private InputControlls inputControlls;
+
+    private bool gameActive = false;
 
     private new void Awake()
     {
@@ -43,13 +47,15 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
         OnSelect?.Invoke();
     }
 
-    public void RestartGame()
+    public void StartGame()
     {
         OnGameRestart?.Invoke();
+        gameActive = true;
     }
 
     public void GameEnd()
     {
         OnGameEnd?.Invoke();
+        gameActive = false;
     }
 }

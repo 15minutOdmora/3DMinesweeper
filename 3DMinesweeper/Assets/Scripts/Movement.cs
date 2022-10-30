@@ -45,18 +45,23 @@ public class Movement : MonoBehaviour
         {
             float deltaX = inputControlls.Movement.DeltaX.ReadValue<float>();
             float deltaY = inputControlls.Movement.DeltaY.ReadValue<float>();
-            Debug.Log($"{deltaX}, {deltaY}");
-            transform.RotateAround(
-                Vector3.zero,
-                transform.up,
-                deltaX * rotationVelocity * Time.deltaTime
-            );
 
-            transform.RotateAround(
-                Vector3.zero,
-                transform.right,
-                -deltaY * rotationVelocity * Time.deltaTime
-            );
+            if (Mathf.Abs(deltaX) > Mathf.Abs(deltaY))
+            {
+                transform.RotateAround(
+                    Vector3.zero,
+                    transform.up,
+                    deltaX * rotationVelocity * Time.deltaTime
+                );
+            }
+            else
+            {
+                transform.RotateAround(
+                    Vector3.zero,
+                    transform.right,
+                    -deltaY * rotationVelocity * Time.deltaTime
+                );
+            }
         }
     }
 
