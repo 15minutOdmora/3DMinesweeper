@@ -106,7 +106,7 @@ public class Field : MonoBehaviour
             {
                 cube.Reveal();
                 ClearAll();
-                // GameManager.Instance.GameEnd();
+                GameManager.Instance.GameEnd(FinalState.Failed);
             }
             else
             {

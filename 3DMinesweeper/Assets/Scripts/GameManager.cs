@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     public event Action OnGameStart;
     public event Action<FinalState> OnGameEnd;
 
+    public event Action OnRedirectToMainMenu;
+
     public bool GameActive => gameActive;
 
     public int CubeSize { get => cubeSize; private set { cubeSize = value; } }
@@ -32,7 +34,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     private new void Awake()
     {
         base.Awake();
-        DontDestroyOnLoad(this);
+        
         inputControlls = new InputControlls();
     }
 
@@ -64,6 +66,11 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     {
         OnGameEnd?.Invoke(finalState);
         gameActive = false;
+    }
+
+    public void RedirectToMainMenu()
+    {
+        OnRedirectToMainMenu?.Invoke();
     }
 
     public void SetFieldData(int cubeSize, float minePercentage)
