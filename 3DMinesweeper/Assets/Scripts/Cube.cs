@@ -9,7 +9,7 @@ public class Cube : MonoBehaviour
     public Vector3 positionInField;
     public bool isMine;
     public int number;
-    public bool isCleared;
+    public bool isRevealed;
 
     [SerializeField] GameObject textContainer;
     [SerializeField] GameObject cube;
@@ -27,30 +27,49 @@ public class Cube : MonoBehaviour
             textObjects.Add(textObject.GetComponent<TMP_Text>());
         }
 
-        DisplayText(false);
+        textContainer.SetActive(false);
     }
 
-    public void Clear()
+    public void Reveal()
     {
-        cube.SetActive(false);
-        mine.SetActive(false);
-        isCleared = true;
+        if (isMine)
+        {
+            DisplayMine();
+        }
+        else if (number > 0)
+        {
+            DisplayValue();
+        }
+        else
+        {
+            Clear();
+        }
+
+        isRevealed = true;
     }
 
-    public void DisplayMine()
+    private void DisplayMine()
     {
         cube.SetActive(false);
         mine.SetActive(true);
     }
 
-    public void DisplayText(bool display)
+    private void DisplayValue()
     {
-        textContainer.SetActive(display);
+        SetNumber();
+        textContainer.SetActive(true);
+        Vector3 targetScale = new Vector3(0.5f, 0.5f, 0.5f);
+        LeanTween.scale(gameObject, targetScale, 0.3f).setEase(LeanTweenType.easeOutCubic);
     }
 
-    public void SetNumber()
+    private void Clear()
     {
-        string textValue = number == 0 ? "" : $"{number}"; 
+        gameObject.SetActive(false);
+    }
+
+    private void SetNumber()
+    {
+        string textValue = number == 0 ? "" : $"{number}";
 
         foreach (TMP_Text textItem in textObjects)
         {

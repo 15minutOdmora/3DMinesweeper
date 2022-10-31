@@ -99,16 +99,17 @@ public class Field : MonoBehaviour
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white, 10f);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
-            Cube cubeData = hit.transform.gameObject.GetComponent<Cube>();
+            Cube cube = hit.transform.gameObject.GetComponent<Cube>();
+            Vector3 pos = cube.positionInField;
 
-            if (cubeData.isMine)
+            if (cube.isMine)
             {
-                cubeData.DisplayMine();
-                GameManager.Instance.GameEnd();
+                cube.Reveal();
+                ClearAll();
+                // GameManager.Instance.GameEnd();
             }
             else
             {
-                Vector3 pos = cubeData.positionInField;
                 ClearSection((int)pos.x, (int)pos.y, (int)pos.z);
             }
         }
@@ -156,34 +157,49 @@ public class Field : MonoBehaviour
         return (0 <= i) & (i < size) & (0 <= j) & (j < size) & (0 <= k) & (k < size);
     }
 
-    private void ClearSection(int i, int j, int k)
+    private void ClearSection(int i, int j, int k, bool all = false)
     {
         if (!CheckBounds(i, j, k))
         {
             return;
         }
-        if (field[i, j, k].isCleared)
+
+        Cube cube = field[i, j, k];
+
+        if (cube.isRevealed)
         {
-            return;
-        }
-        if (field[i, j, k].isMine)
-        {
-            return;
-        }
-        if (field[i, j, k].number > 0)
-        {
-            field[i, j, k].DisplayText(true);
-            field[i, j, k].SetNumber();
             return;
         }
 
-        field[i, j, k].Clear();
-        
-        ClearSection(i + 1, j, k);
-        ClearSection(i - 1, j, k);
-        ClearSection(i, j + 1, k);
-        ClearSection(i, j - 1, k);
-        ClearSection(i, j, k + 1);
-        ClearSection(i, j, k - 1);
+        cube.Reveal();
+
+        if (cube.isMine || cube.number > 0)
+        {
+            return;
+        }
+
+        ClearSection(i + 1, j, k, all);
+        ClearSection(i - 1, j, k, all);
+        ClearSection(i, j + 1, k, all);
+        ClearSection(i, j - 1, k, all);
+        ClearSection(i, j, k + 1, all);
+        ClearSection(i, j, k - 1, all);
+    }
+
+    private void ClearAll()
+    {
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                for (int k = 0; k < size; k++)
+                {
+                    if (!field[i, j, k].isRevealed)
+                    {
+                        field[i, j, k].Reveal();
+                    }
+                }
+            }
+        }
     }
 }
