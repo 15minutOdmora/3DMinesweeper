@@ -3,15 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum FinalState
+{
+    Completed,
+    Failed
+}
+
 public class GameManager : MonoBehaviourSingleton<GameManager>
 {
     public event Action OnClear;
     public event Action OnSelect;
 
-    public event Action OnGameRestart;
-    public event Action OnGameEnd;
+    public event Action OnGameStart;
+    public event Action<FinalState> OnGameEnd;
 
     public bool GameActive => gameActive;
+
+    public int CubeSize { get => cubeSize; private set { cubeSize = value; } }
+    public float MinePercentage { get => minePercentage; private set { minePercentage = value; } }
+
+    private int cubeSize = 5;
+    private float minePercentage = 0.01f;
 
     private InputControlls inputControlls;
 
@@ -21,7 +33,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     {
         base.Awake();
         DontDestroyOnLoad(this);
-        inputControlls = new InputControlls();    
+        inputControlls = new InputControlls();
     }
 
     private void OnEnable()
@@ -30,11 +42,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
 
         inputControlls.Click.Clear.performed += (_) => Clear();
         inputControlls.Click.Select.performed += (_) => Select();
-    }
-
-    private void OnDisable()
-    {
-        inputControlls.Disable();
     }
 
     public void Clear()
@@ -49,13 +56,19 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
 
     public void StartGame()
     {
-        OnGameRestart?.Invoke();
+        OnGameStart?.Invoke();
         gameActive = true;
     }
 
-    public void GameEnd()
+    public void GameEnd(FinalState finalState)
     {
-        OnGameEnd?.Invoke();
+        OnGameEnd?.Invoke(finalState);
         gameActive = false;
+    }
+
+    public void SetFieldData(int cubeSize, float minePercentage)
+    {
+        CubeSize = cubeSize;
+        MinePercentage = minePercentage;
     }
 }

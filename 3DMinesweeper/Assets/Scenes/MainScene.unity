@@ -750,7 +750,7 @@ PrefabInstance:
     - target: {fileID: 7623843864320150642, guid: 8d1c7a2bad5e1244fbe2397c4dca7d85, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1070810299}
+      objectReference: {fileID: 0}
     - target: {fileID: 7623843864320150642, guid: 8d1c7a2bad5e1244fbe2397c4dca7d85, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -1568,6 +1568,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c55a1ce453204ef89defa44b126f17e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animationDuration: 0.4
+  cubeSizeInputField: {fileID: 446950603}
+  minePercentageInputField: {fileID: 994923821}
 --- !u!1 &940468416
 GameObject:
   m_ObjectHideFlags: 0
@@ -1712,6 +1715,7 @@ GameObject:
   m_Component:
   - component: {fileID: 954566318}
   - component: {fileID: 954566317}
+  - component: {fileID: 954566319}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1745,6 +1749,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &954566319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 954566316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b48d5356acf6040a1957e65b851dc3fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainMenu: {fileID: 924452861}
+  endGameMenu: {fileID: 0}
 --- !u!1001 &954950920
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1851,7 +1869,7 @@ PrefabInstance:
     - target: {fileID: 7623843864320150642, guid: 8d1c7a2bad5e1244fbe2397c4dca7d85, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1070810299}
+      objectReference: {fileID: 0}
     - target: {fileID: 7623843864320150642, guid: 8d1c7a2bad5e1244fbe2397c4dca7d85, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -2020,7 +2038,7 @@ GameObject:
   - component: {fileID: 994923822}
   - component: {fileID: 994923821}
   m_Layer: 5
-  m_Name: CubeSizeInputField
+  m_Name: MinePercentageInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2334,9 +2352,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1070810297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c55a1ce453204ef89defa44b126f17e, type: 3}
+  m_Script: {fileID: 11500000, guid: a064e2ace82bd4f1c83f23b9d0b9b92e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animationDuration: 0.4
 --- !u!114 &1070810300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3125,7 +3144,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7623843864320150642, guid: 8d1c7a2bad5e1244fbe2397c4dca7d85, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnPlayButtonClick
+      value: OnQuitButtonClicked
       objectReference: {fileID: 0}
     - target: {fileID: 7623843864320150642, guid: 8d1c7a2bad5e1244fbe2397c4dca7d85, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
