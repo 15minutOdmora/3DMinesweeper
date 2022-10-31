@@ -1,17 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class UIController : MonoBehaviour
 {
     [SerializeField] MainMenu mainMenu;
     [SerializeField] EndGameMenu endGameMenu;
 
+    [SerializeField] TMP_Text timerText;
+
     private GameManager gameManager;
 
     private void Awake()
     {
         gameManager = GameManager.Instance;
+
+        Timer.Instance.SetText(timerText);
+        Timer.Instance.Restart();
     }
 
     private void OnEnable()
@@ -28,16 +34,17 @@ public class UIController : MonoBehaviour
         gameManager.OnRedirectToMainMenu -= GameManager_OnRedirectToMainMenu;
     }
 
-    private void GameManager_OnGameEnd(FinalState finalState)
+    private void GameManager_OnGameEnd(FinalState finalState, float endTime)
     {
         endGameMenu.gameObject.SetActive(true);
         endGameMenu.Open();
-        endGameMenu.SetFinalState(finalState);
+        endGameMenu.SetFinalState(finalState, endTime);
     }
 
     private void GameManager_OnGameStart()
     {
-        mainMenu.Close();
+        Timer.Instance.Restart();
+        mainMenu.Close().setOnComplete(() => { Timer.Instance.Begin(); });
         endGameMenu.Close();
     }
 

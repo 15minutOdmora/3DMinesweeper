@@ -7,6 +7,7 @@ public class EndGameMenu : Menu
 {
     [SerializeField] TMP_Text headerText;
     [SerializeField] TMP_Text timeResultText;
+    [SerializeField] TMP_Text bestTimeResultText;
 
     [SerializeField] Color completedColor;
     [SerializeField] Color failedColor;
@@ -35,5 +36,15 @@ public class EndGameMenu : Menu
         {
             headerText.color = failedColor;
         }
+
+        string formatedTime = Timer.FormatTime(finalTime);
+
+        if (finalTime < bestTime)
+        {
+            bestTime = finalTime;
+            bestTimeResultText.text = "Best: " + formatedTime;
+        }
+
+        timeResultText.text = formatedTime;
     }
 }

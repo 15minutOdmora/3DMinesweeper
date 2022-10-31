@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     public event Action OnSelect;
 
     public event Action OnGameStart;
-    public event Action<FinalState> OnGameEnd;
+    public event Action<FinalState, float> OnGameEnd;
 
     public event Action OnRedirectToMainMenu;
 
@@ -64,7 +64,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
 
     public void GameEnd(FinalState finalState)
     {
-        OnGameEnd?.Invoke(finalState);
+        Timer.Instance.End();
+        OnGameEnd?.Invoke(finalState, Timer.Instance.LastEndedTime);
         gameActive = false;
     }
 
