@@ -493,8 +493,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2be40a373c26694f9663503226e9d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 5
-  minePercentage: 0.05
   cube: {fileID: 1670826873924382469, guid: e20ad1cf80be64e41931aff6430731b2, type: 3}
 --- !u!4 &182557500
 Transform:
