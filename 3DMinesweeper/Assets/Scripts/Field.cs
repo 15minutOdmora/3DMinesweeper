@@ -7,9 +7,6 @@ using Random = UnityEngine.Random;
 
 public class Field : MonoBehaviour
 {
-    [SerializeField] private int size;
-    [SerializeField] private float minePercentage;
-
     [SerializeField] GameObject cube;
 
     private Cube[,,] field;
@@ -17,19 +14,36 @@ public class Field : MonoBehaviour
     private Ray ray;
     private RaycastHit hit;
 
+    private int CubeSize => GameManager.Instance.CubeSize;
+    private float MinePercentage => GameManager.Instance.MinePercentage;
+
     private void Start()
     {
-        Generate();
+        // Generate();
     }
 
     private void OnEnable()
     {
-        GameManager.Instance.OnClear += OnMouseClick;
+        GameManager.Instance.OnGameStart += Generate;
+        GameManager.Instance.OnClear += GameManager_OnClear;
+        GameManager.Instance.OnMarked += GameManager_OnMarked;
     }
 
     private void OnDisable()
     {
-        GameManager.Instance.OnClear -= OnMouseClick;
+        GameManager.Instance.OnGameStart -= Generate;
+        GameManager.Instance.OnClear += GameManager_OnClear;
+        GameManager.Instance.OnMarked += GameManager_OnMarked;
+    }
+
+    private void GameManager_OnMarked()
+    {
+        OnMouseClick(true);
+    }
+
+    private void GameManager_OnClear()
+    {
+        OnMouseClick();
     }
 
     public void Generate()
@@ -37,13 +51,13 @@ public class Field : MonoBehaviour
         Renderer meshRenderer = cube.GetComponentInChildren<MeshRenderer>();
         Vector3 cubeSize = meshRenderer.bounds.size;
 
-        field = new Cube[size, size, size];
+        field = new Cube[CubeSize, CubeSize, CubeSize];
 
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < CubeSize; i++)
         {
-            for (int j = 0; j < size; j++)
+            for (int j = 0; j < CubeSize; j++)
             {
-                for (int k = 0; k < size; k++)
+                for (int k = 0; k < CubeSize; k++)
                 {
                     Vector3 position = new Vector3(
                             i * cubeSize.x,
@@ -58,9 +72,9 @@ public class Field : MonoBehaviour
         SetNumbers();
 
         transform.position -= new Vector3(
-                size * cubeSize.x / 2,
-                size * cubeSize.y / 2,
-                size * cubeSize.z / 2
+                CubeSize * cubeSize.x / 2,
+                CubeSize * cubeSize.y / 2,
+                CubeSize * cubeSize.z / 2
             );
     }
 
@@ -82,12 +96,12 @@ public class Field : MonoBehaviour
         Cube cubeData = instantiatedCube.GetComponent<Cube>();
         cubeData.field = this;
         cubeData.positionInField = new Vector3(i, j, k);
-        cubeData.isMine = Random.value < minePercentage;
+        cubeData.isMine = Random.value < MinePercentage;
 
         field[i, j, k] = cubeData;
     }
 
-    private void OnMouseClick()
+    private void OnMouseClick(bool markedAction = false)
     {
         if (!GameManager.Instance.GameActive)
         {
@@ -96,32 +110,56 @@ public class Field : MonoBehaviour
 
         ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white, 10f);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
             Cube cube = hit.transform.gameObject.GetComponent<Cube>();
-            Vector3 pos = cube.positionInField;
 
-            if (cube.isMine)
+            if (markedAction)
             {
-                cube.Reveal();
-                ClearAll();
-                GameManager.Instance.GameEnd(FinalState.Failed);
+                MarkedAction(cube);
             }
             else
             {
-                ClearSection((int)pos.x, (int)pos.y, (int)pos.z);
+                RevealAction(cube);
             }
+        }
+    }
+
+    private void RevealAction(Cube cube)
+    {
+        if (cube.isMine)
+        {
+            cube.Reveal();
+            ClearAll();
+            GameManager.Instance.GameEnd(FinalState.Failed);
+        }
+        else
+        {
+            Vector3 pos = cube.positionInField;
+            ClearSection((int)pos.x, (int)pos.y, (int)pos.z);
+        }
+    }
+
+    private void MarkedAction(Cube cube)
+    {
+        if (cube.isMine)
+        {
+            cube.Mark();
+        }
+        else
+        {
+            ClearAll();
+            GameManager.Instance.GameEnd(FinalState.Failed);
         }
     }
 
     private void SetNumbers()
     {
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < CubeSize; i++)
         {
-            for (int j = 0; j < size; j++)
+            for (int j = 0; j < CubeSize; j++)
             {
-                for (int k = 0; k < size; k++)
+                for (int k = 0; k < CubeSize; k++)
                 {
                     if (field[i, j, k].isMine)
                     {
@@ -154,7 +192,7 @@ public class Field : MonoBehaviour
 
     private bool CheckBounds(int i, int j, int k)
     {
-        return (0 <= i) & (i < size) & (0 <= j) & (j < size) & (0 <= k) & (k < size);
+        return (0 <= i) & (i < CubeSize) & (0 <= j) & (j < CubeSize) & (0 <= k) & (k < CubeSize);
     }
 
     private void ClearSection(int i, int j, int k, bool all = false)
@@ -188,11 +226,11 @@ public class Field : MonoBehaviour
 
     private void ClearAll()
     {
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < CubeSize; i++)
         {
-            for (int j = 0; j < size; j++)
+            for (int j = 0; j < CubeSize; j++)
             {
-                for (int k = 0; k < size; k++)
+                for (int k = 0; k < CubeSize; k++)
                 {
                     if (!field[i, j, k].isRevealed)
                     {

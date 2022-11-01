@@ -34,7 +34,7 @@ public class MainMenu : Menu
     private (int, float) GetInputValues()
     {
         int cubeSize = int.Parse(cubeSizeInputField.text);
-        float minePercentage = float.Parse(minePercentageInputField.text);
+        float minePercentage = float.Parse(minePercentageInputField.text) * 0.01f;
         return (cubeSize, minePercentage);
     }
 }

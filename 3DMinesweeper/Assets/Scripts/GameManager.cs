@@ -12,7 +12,7 @@ public enum FinalState
 public class GameManager : MonoBehaviourSingleton<GameManager>
 {
     public event Action OnClear;
-    public event Action OnSelect;
+    public event Action OnMarked;
 
     public event Action OnGameStart;
     public event Action<FinalState, float> OnGameEnd;
@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
 
     public void Select()
     {
-        OnSelect?.Invoke();
+        OnMarked?.Invoke();
     }
 
     public void StartGame()

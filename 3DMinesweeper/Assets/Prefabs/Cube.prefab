@@ -383,9 +383,11 @@ MonoBehaviour:
   positionInField: {x: 0, y: 0, z: 0}
   isMine: 0
   number: 0
+  isRevealed: 0
   textContainer: {fileID: 4201190019795051547}
   cube: {fileID: 1340831088326618368}
   mine: {fileID: 735474100928183304}
+  markedMaterial: {fileID: 2100000, guid: d861d9d3146dc4b6ebc1d1cd90c4da06, type: 2}
 --- !u!65 &3221787219467660287
 BoxCollider:
   m_ObjectHideFlags: 0

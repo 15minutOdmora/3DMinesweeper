@@ -15,6 +15,8 @@ public class Cube : MonoBehaviour
     [SerializeField] GameObject cube;
     [SerializeField] GameObject mine;
 
+    [SerializeField] Material markedMaterial;
+
     private List<TMP_Text> textObjects;
 
     private void Start()
@@ -46,6 +48,12 @@ public class Cube : MonoBehaviour
         }
 
         isRevealed = true;
+    }
+
+    public void Mark()
+    {
+        MeshRenderer meshRenderer = cube.GetComponent<MeshRenderer>();
+        meshRenderer.material = markedMaterial;
     }
 
     private void DisplayMine()
