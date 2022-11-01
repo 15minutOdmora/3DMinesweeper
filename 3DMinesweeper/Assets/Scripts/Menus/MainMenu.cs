@@ -23,6 +23,7 @@ public class MainMenu : Menu
     public void OnQuitButtonClicked()
     {
         Debug.Log("Quit clicked.");
+        Application.Quit();
     }
 
     private void SetInputValues(int cubeSize, float minePercentage)

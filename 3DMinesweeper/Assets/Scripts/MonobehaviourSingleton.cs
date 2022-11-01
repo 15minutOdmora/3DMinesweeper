@@ -28,8 +28,12 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
     protected virtual void Awake()
     {
         if (_instance == null)
+        {
             _instance = GetComponent<T>();
+        }
         else
+        {
             Destroy(gameObject);
+        }
     }
 }

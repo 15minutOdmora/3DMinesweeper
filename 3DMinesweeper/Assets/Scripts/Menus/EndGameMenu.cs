@@ -27,22 +27,21 @@ public class EndGameMenu : Menu
     public void SetFinalState(FinalState state, float finalTime = 0f)
     {
         headerText.text = state.ToString();
+        string formatedTime = Timer.FormatTime(finalTime);
 
         if (state == FinalState.Completed)
         {
             headerText.color = completedColor;
+
+            if(finalTime < bestTime)
+            {
+                bestTime = finalTime;
+                bestTimeResultText.text = "Best: " + formatedTime;
+            }
         }
         else
         {
             headerText.color = failedColor;
-        }
-
-        string formatedTime = Timer.FormatTime(finalTime);
-
-        if (finalTime < bestTime)
-        {
-            bestTime = finalTime;
-            bestTimeResultText.text = "Best: " + formatedTime;
         }
 
         timeResultText.text = formatedTime;
