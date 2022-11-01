@@ -17,10 +17,8 @@ public class Field : MonoBehaviour
     private int CubeSize => GameManager.Instance.CubeSize;
     private float MinePercentage => GameManager.Instance.MinePercentage;
 
-    private void Start()
-    {
-        // Generate();
-    }
+    private int mineTotal = 0;
+    private int mineCount = 0;
 
     private void OnEnable()
     {
@@ -48,6 +46,8 @@ public class Field : MonoBehaviour
 
     public void Generate()
     {
+        Reset();
+
         Renderer meshRenderer = cube.GetComponentInChildren<MeshRenderer>();
         Vector3 cubeSize = meshRenderer.bounds.size;
 
@@ -96,7 +96,11 @@ public class Field : MonoBehaviour
         Cube cubeData = instantiatedCube.GetComponent<Cube>();
         cubeData.field = this;
         cubeData.positionInField = new Vector3(i, j, k);
-        cubeData.isMine = Random.value < MinePercentage;
+        if (Random.value < MinePercentage)
+        {
+            cubeData.isMine = true;
+            mineTotal++;
+        }
 
         field[i, j, k] = cubeData;
     }
@@ -145,6 +149,13 @@ public class Field : MonoBehaviour
         if (cube.isMine)
         {
             cube.Mark();
+            mineCount++;
+
+            if (mineCount == mineTotal)
+            {
+                ClearAll();
+                GameManager.Instance.GameEnd(FinalState.Completed);
+            }
         }
         else
         {
@@ -238,6 +249,17 @@ public class Field : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+    private void Reset()
+    {
+        mineTotal = 0;
+        mineCount = 0;
+
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
         }
     }
 }
