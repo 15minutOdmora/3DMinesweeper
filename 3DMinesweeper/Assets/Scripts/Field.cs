@@ -10,6 +10,7 @@ public class Field : MonoBehaviour
     [SerializeField] GameObject cube;
 
     private Cube[,,] field;
+    private List<Cube> mines;
 
     private Ray ray;
     private RaycastHit hit;
@@ -72,11 +73,10 @@ public class Field : MonoBehaviour
         // If no mine added -> add one at a random position
         if (mineTotal == 0)
         {
-            int posX = Random.Range(0, CubeSize - 1);
-            int posY = Random.Range(0, CubeSize - 1);
-            int posZ = Random.Range(0, CubeSize - 1);
-            field[posX, posY, posZ].isMine = true;
-            mineTotal++;
+            int i = Random.Range(0, CubeSize - 1);
+            int j = Random.Range(0, CubeSize - 1);
+            int k = Random.Range(0, CubeSize - 1);
+            MakeMine(i, j, k);
         }
 
         SetNumbers();
@@ -106,13 +106,19 @@ public class Field : MonoBehaviour
         Cube cubeData = instantiatedCube.GetComponent<Cube>();
         cubeData.field = this;
         cubeData.positionInField = new Vector3(i, j, k);
+        field[i, j, k] = cubeData;
+
         if (Random.value < MinePercentage)
         {
-            cubeData.isMine = true;
-            mineTotal++;
+            MakeMine(i, j, k);
         }
+    }
 
-        field[i, j, k] = cubeData;
+    private void MakeMine(int i, int j, int k)
+    {
+        field[i, j, k].isMine = true;
+        mineTotal++;
+        mines.Add(field[i, j, k]);
     }
 
     private void OnMouseClick(bool markedAction = false)
@@ -177,18 +183,13 @@ public class Field : MonoBehaviour
 
     private void SetNumbers()
     {
-        for (int i = 0; i < CubeSize; i++)
+        foreach (Cube cube in mines)
         {
-            for (int j = 0; j < CubeSize; j++)
-            {
-                for (int k = 0; k < CubeSize; k++)
-                {
-                    if (field[i, j, k].isMine)
-                    {
-                        AddSurroundingMineCount(i, j, k);
-                    }
-                }
-            }
+            AddSurroundingMineCount(
+                (int)cube.positionInField.x,
+                (int)cube.positionInField.y,
+                (int)cube.positionInField.z
+            );
         }
     }
 
@@ -267,6 +268,8 @@ public class Field : MonoBehaviour
     {
         mineTotal = 0;
         mineCount = 0;
+
+        mines = new List<Cube>();
 
         foreach (Transform child in transform)
         {

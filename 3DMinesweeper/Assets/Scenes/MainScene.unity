@@ -3604,7 +3604,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Best: 00:00:29.37'
+  m_text: 'Best: ---'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 33fe8432f5a28465ba9d3d5bfef00905, type: 2}
   m_sharedMaterial: {fileID: -3320869591697623278, guid: 33fe8432f5a28465ba9d3d5bfef00905, type: 2}
