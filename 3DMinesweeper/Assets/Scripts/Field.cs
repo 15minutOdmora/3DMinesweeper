@@ -5,11 +5,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// Main object containing all cubes and actions for clearing / marking.
+/// </summary>
 public class Field : MonoBehaviour
 {
     [SerializeField] GameObject cube;
 
     private Cube[,,] field;
+    private List<Cube> mines;
 
     private Ray ray;
     private RaycastHit hit;
@@ -30,20 +34,23 @@ public class Field : MonoBehaviour
     private void OnDisable()
     {
         GameManager.Instance.OnGameStart -= Generate;
-        GameManager.Instance.OnClear += GameManager_OnClear;
-        GameManager.Instance.OnMarked += GameManager_OnMarked;
+        GameManager.Instance.OnClear -= GameManager_OnClear;
+        GameManager.Instance.OnMarked -= GameManager_OnMarked;
     }
 
     private void GameManager_OnMarked()
     {
-        OnMouseClick(true);
+        OnUserAction(true);  // Trigger mark action
     }
 
     private void GameManager_OnClear()
     {
-        OnMouseClick();
+        OnUserAction();  // Trigger clear action
     }
 
+    /// <summary>
+    /// Generates field of cubes.
+    /// </summary>
     public void Generate()
     {
         Reset();
@@ -69,8 +76,18 @@ public class Field : MonoBehaviour
             }
         }
 
+        // If no mine added -> add one at a random position
+        if (mineTotal == 0)
+        {
+            int i = Random.Range(0, CubeSize - 1);
+            int j = Random.Range(0, CubeSize - 1);
+            int k = Random.Range(0, CubeSize - 1);
+            MakeMine(i, j, k);
+        }
+
         SetNumbers();
 
+        // Shift field to center
         transform.position -= new Vector3(
                 CubeSize * cubeSize.x / 2,
                 CubeSize * cubeSize.y / 2,
@@ -78,6 +95,9 @@ public class Field : MonoBehaviour
             );
     }
 
+    /// <summary>
+    /// Clears field (removes all cubes).
+    /// </summary>
     public void Clear()
     {
         for (int i = 0; i < transform.childCount; i++)
@@ -86,6 +106,9 @@ public class Field : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Spawns a cube at given position, saves under passed indexes in field.
+    /// </summary>
     private void SpawnCube(Vector3 position, int i, int j, int k)
     {
         GameObject instantiatedCube = Instantiate(cube);
@@ -96,16 +119,29 @@ public class Field : MonoBehaviour
         Cube cubeData = instantiatedCube.GetComponent<Cube>();
         cubeData.field = this;
         cubeData.positionInField = new Vector3(i, j, k);
+        field[i, j, k] = cubeData;
+
         if (Random.value < MinePercentage)
         {
-            cubeData.isMine = true;
-            mineTotal++;
+            MakeMine(i, j, k);
         }
-
-        field[i, j, k] = cubeData;
     }
 
-    private void OnMouseClick(bool markedAction = false)
+    /// <summary>
+    /// Turns cube into mine, while also adding it to the mine list.
+    /// </summary>
+    private void MakeMine(int i, int j, int k)
+    {
+        field[i, j, k].isMine = true;
+        mineTotal++;
+        mines.Add(field[i, j, k]);
+    }
+
+    /// <summary>
+    /// Logic for when the user presses either mark or clear action.
+    /// </summary>
+    /// <param name="markedAction">If mark action pressed</param>
+    private void OnUserAction(bool markedAction = false)
     {
         if (!GameManager.Instance.GameActive)
         {
@@ -129,6 +165,9 @@ public class Field : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Reveals passed cube.
+    /// </summary>
     private void RevealAction(Cube cube)
     {
         if (cube.isMine)
@@ -144,6 +183,9 @@ public class Field : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Markes passed cube.
+    /// </summary>
     private void MarkedAction(Cube cube)
     {
         if (cube.isMine)
@@ -164,23 +206,24 @@ public class Field : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets numbers of all cubes surrounding mines.
+    /// </summary>
     private void SetNumbers()
     {
-        for (int i = 0; i < CubeSize; i++)
+        foreach (Cube cube in mines)
         {
-            for (int j = 0; j < CubeSize; j++)
-            {
-                for (int k = 0; k < CubeSize; k++)
-                {
-                    if (field[i, j, k].isMine)
-                    {
-                        AddSurroundingMineCount(i, j, k);
-                    }
-                }
-            }
+            AddSurroundingMineCount(
+                (int)cube.positionInField.x,
+                (int)cube.positionInField.y,
+                (int)cube.positionInField.z
+            );
         }
     }
 
+    /// <summary>
+    /// Increases mine count on cubes surrounding mine at pased indexes.
+    /// </summary>
     private void AddSurroundingMineCount(int i, int j, int k)
     {
         for (int ii = i - 1; ii <= i + 1; ii++)
@@ -201,12 +244,19 @@ public class Field : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if indexes are in the bounds of the field.
+    /// </summary>
     private bool CheckBounds(int i, int j, int k)
     {
         return (0 <= i) & (i < CubeSize) & (0 <= j) & (j < CubeSize) & (0 <= k) & (k < CubeSize);
     }
 
-    private void ClearSection(int i, int j, int k, bool all = false)
+    /// <summary>
+    /// Recusively clears a given section.
+    /// Clears up untill hitting a numbered cube.
+    /// </summary>
+    private void ClearSection(int i, int j, int k)
     {
         if (!CheckBounds(i, j, k))
         {
@@ -227,14 +277,17 @@ public class Field : MonoBehaviour
             return;
         }
 
-        ClearSection(i + 1, j, k, all);
-        ClearSection(i - 1, j, k, all);
-        ClearSection(i, j + 1, k, all);
-        ClearSection(i, j - 1, k, all);
-        ClearSection(i, j, k + 1, all);
-        ClearSection(i, j, k - 1, all);
+        ClearSection(i + 1, j, k);
+        ClearSection(i - 1, j, k);
+        ClearSection(i, j + 1, k);
+        ClearSection(i, j - 1, k);
+        ClearSection(i, j, k + 1);
+        ClearSection(i, j, k - 1);
     }
 
+    /// <summary>
+    /// Clears and reveals all cubes.
+    /// </summary>
     private void ClearAll()
     {
         for (int i = 0; i < CubeSize; i++)
@@ -252,10 +305,15 @@ public class Field : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resets to default values and clears field.
+    /// </summary>
     private void Reset()
     {
         mineTotal = 0;
         mineCount = 0;
+
+        mines = new List<Cube>();
 
         foreach (Transform child in transform)
         {

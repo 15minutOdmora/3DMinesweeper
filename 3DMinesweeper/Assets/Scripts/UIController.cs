@@ -18,6 +18,7 @@ public class UIController : MonoBehaviour
 
         Timer.Instance.SetText(timerText);
         Timer.Instance.Restart();
+        timerText.enabled = false;
     }
 
     private void OnEnable()
@@ -39,10 +40,12 @@ public class UIController : MonoBehaviour
         endGameMenu.gameObject.SetActive(true);
         endGameMenu.Open();
         endGameMenu.SetFinalState(finalState, endTime);
+        timerText.enabled = false;
     }
 
     private void GameManager_OnGameStart()
     {
+        timerText.enabled = true;
         Timer.Instance.Restart();
         mainMenu.Close().setOnComplete(() => { Timer.Instance.Begin(); });
         endGameMenu.Close();
