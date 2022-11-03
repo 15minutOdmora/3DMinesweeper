@@ -69,6 +69,16 @@ public class Field : MonoBehaviour
             }
         }
 
+        // If no mine added -> add one at a random position
+        if (mineTotal == 0)
+        {
+            int posX = Random.Range(0, CubeSize - 1);
+            int posY = Random.Range(0, CubeSize - 1);
+            int posZ = Random.Range(0, CubeSize - 1);
+            field[posX, posY, posZ].isMine = true;
+            mineTotal++;
+        }
+
         SetNumbers();
 
         transform.position -= new Vector3(
@@ -150,7 +160,8 @@ public class Field : MonoBehaviour
         {
             cube.Mark();
             mineCount++;
-
+            Debug.Log(mineCount);
+            Debug.Log(mineTotal);
             if (mineCount == mineTotal)
             {
                 ClearAll();
