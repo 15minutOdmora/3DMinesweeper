@@ -87,6 +87,7 @@ public class Field : MonoBehaviour
 
         SetNumbers();
 
+        // Shift field to center
         transform.position -= new Vector3(
                 CubeSize * cubeSize.x / 2,
                 CubeSize * cubeSize.y / 2,

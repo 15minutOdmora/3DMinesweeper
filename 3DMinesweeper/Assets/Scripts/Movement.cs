@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour
 {
+    [SerializeField] GameObject target;
+
     [SerializeField] float zoomScale;
     [SerializeField] float minZoomDistance = 0f;
     [SerializeField] float maxZoomDistance;
@@ -48,10 +50,10 @@ public class Movement : MonoBehaviour
 
             if (Mathf.Abs(deltaX) > Mathf.Abs(deltaY))
             {
-                transform.RotateAround(
+                target.transform.RotateAround(
                     Vector3.zero,
-                    transform.up,
-                    deltaX * rotationVelocity * Time.deltaTime
+                    target.transform.up,
+                    -deltaX * rotationVelocity * Time.deltaTime
                 );
             }
             else
