@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using TMPro;
 
@@ -7,8 +8,16 @@ public class MainMenu : Menu
 {
     [SerializeField] TMP_InputField cubeSizeInputField;
     [SerializeField] TMP_InputField minePercentageInputField;
+    [SerializeField] TMP_Text difficultyText;
 
-    public void Start()
+    [SerializeField] float easyLimit;
+    [SerializeField] float mediumLimit;
+
+    [SerializeField] Color easyColor;
+    [SerializeField] Color mediumColor;
+    [SerializeField] Color hardColor;
+
+    private void Start()
     {
         SetInputValues(gameManager.CubeSize, gameManager.MinePercentage);
     }
@@ -26,6 +35,20 @@ public class MainMenu : Menu
         Application.Quit();
     }
 
+    public void OnMinePercentageValueChanged(string value)
+    {
+        float parsedValue;
+        try
+        {
+            parsedValue = float.Parse(minePercentageInputField.text) * 0.01f;
+            UpdateDifficultyText(parsedValue);
+        }
+        catch (FormatException)
+        {
+            return;
+        }
+    }
+
     private void SetInputValues(int cubeSize, float minePercentage)
     {
         cubeSizeInputField.text = cubeSize.ToString();
@@ -37,5 +60,24 @@ public class MainMenu : Menu
         int cubeSize = int.Parse(cubeSizeInputField.text);
         float minePercentage = float.Parse(minePercentageInputField.text) * 0.01f;
         return (cubeSize, minePercentage);
+    }
+
+    private void UpdateDifficultyText(float value)
+    {
+        if (value < easyLimit)
+        {
+            difficultyText.color = easyColor;
+            difficultyText.text = "Easy";
+        }
+        else if (value < mediumLimit)
+        {
+            difficultyText.color = mediumColor;
+            difficultyText.text = "Medium";
+        }
+        else
+        {
+            difficultyText.color = hardColor;
+            difficultyText.text = "Hard";
+        }
     }
 }
